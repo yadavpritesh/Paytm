@@ -28,3 +28,15 @@ jobs:
 
     - name: Verify Pushed Image
       run: docker pull 247374/paytm123:latest  # Replace with your Docker Hub username and repository
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@main
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          sudo docker pull 247374/paytm123:latest
+          sudo docker stop paytm123 || true
+          sudo docker rm paytm123 || true
+          sudo docker run -d --restart always --name paytm123 -p 3005:3000 247374/paytm123:latest
